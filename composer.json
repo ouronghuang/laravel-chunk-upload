@@ -1,0 +1,41 @@
+{
+  "name": "orh/laravel-chunk-upload",
+  "description": "The chunk upload for laravel",
+  "keywords": [
+    "laravel",
+    "chunk-upload",
+    "laravel-chunk-upload"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~6.5.0",
+    "friendsofphp/php-cs-fixer": "~2.17.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Orh\\LaravelChunkUpload\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Orh\\LaravelChunkUpload\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "orh",
+      "email": "512574561@qq.com"
+    }
+  ],
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Orh\\LaravelChunkUpload\\ServiceProvider"
+      ]
+    }
+  }
+}
