@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Orh\LaravelChunkUpload\Exceptions\InvalidArgumentException;
 use Orh\LaravelChunkUpload\Exceptions\InvalidExtensionException;
 use Orh\LaravelChunkUpload\Exceptions\InvalidIndexException;
+use Orh\LaravelChunkUpload\Exceptions\InvalidSizeException;
 use Orh\LaravelChunkUpload\Exceptions\NotExistsException;
 
 class ChunkUpload
@@ -15,19 +16,26 @@ class ChunkUpload
         $filename = $request->input(config('chunk-upload.request.filename'));
 
         if (! $filename) {
-            throw new InvalidArgumentException('The filename is required.');
+            throw new InvalidArgumentException('The [filename] is required.');
         }
 
         $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         if (! $extension) {
-            throw new InvalidArgumentException('The extension is invalid.');
+            throw new InvalidArgumentException('The [extension] is invalid.');
         }
 
-        $extensions = config('chunk-upload.extensions');
+        $allowExtensions = config('chunk-upload.allow_extensions');
 
-        if (count($extensions) && ! in_array($extension, $extensions)) {
-            throw new InvalidExtensionException("The target chunk file extension [{$extension}] is not allowed.");
+        if (count($allowExtensions) && ! in_array($extension, $allowExtensions)) {
+            throw new InvalidExtensionException("The extension [{$extension}] is not allowed.");
+        }
+
+        $allowSize = config('chunk-upload.allow_size');
+        $size = $request->input(config('chunk-upload.request.size'));
+
+        if ($size > $allowSize) {
+            throw new InvalidSizeException("The size [{$size}] must not be greater than {$allowSize}.");
         }
 
         $filename = time().mt_rand(100000, 999999).'.'.$extension;
@@ -44,18 +52,37 @@ class ChunkUpload
     public function save(Request $request): array
     {
         $filename = $request->input(config('chunk-upload.request.filename'));
+
+        if (! $filename) {
+            throw new InvalidArgumentException('The [filename] is required.');
+        }
+
         $total = (int)$request->input(config('chunk-upload.request.total'));
+
+        if (! is_numeric($total)) {
+            throw new InvalidArgumentException('The [total] is required.');
+        }
+
         $index = (int)$request->input(config('chunk-upload.request.index'));
+
+        if (! is_numeric($index)) {
+            throw new InvalidArgumentException('The [index] is required.');
+        }
+
         $file = $request->file(config('chunk-upload.request.file'));
+
+        if (! $file->isValid()) {
+            throw new InvalidArgumentException('The [file] is invalid.');
+        }
 
         $partial = new Partial($filename);
 
         if (! $partial->exists()) {
-            throw new NotExistsException("The target chunk file [{$filename}] is not exists.");
+            throw new NotExistsException("The file [{$filename}] is not exists.");
         }
 
         if ((int)($partial->header->read()) !== $index - 1) {
-            throw new InvalidIndexException("The target chunk file [{$filename}] index is not invalid.");
+            throw new InvalidIndexException("The file [{$filename}] index is not invalid.");
         }
 
         $partial->append($file->getContent());
