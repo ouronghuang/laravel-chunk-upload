@@ -41,7 +41,7 @@ $ php artisan vendor:publish --tag=chunk-upload-config
 $ php artisan chunk-upload:clear
 ```
 
-## 使用
+4. 调用
 
 ```php
 use Illuminate\Http\Request;
@@ -52,6 +52,8 @@ app('chunk-upload')->preprocess($request);
 // 上传
 app('chunk-upload')->save($request);
 ```
+
+5. [配置说明](./config/chunk-upload.php)
 
 ## 示例
 

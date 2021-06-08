@@ -34,7 +34,7 @@ class ChunkUpload
         $allowSize = config('chunk-upload.allow_size');
         $size = $request->input(config('chunk-upload.request.size'));
 
-        if ($size > $allowSize) {
+        if ($allowSize && $size > $allowSize) {
             throw new InvalidSizeException("The size [{$size}] must not be greater than {$allowSize}.");
         }
 
