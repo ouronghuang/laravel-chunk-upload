@@ -26,8 +26,14 @@ class ServiceProvider extends LaravelServiceProvider
 
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../config/chunk-upload.php' => config_path('chunk-upload.php'),
-        ], 'chunk-upload-config');
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/chunk-upload.php' => config_path('chunk-upload.php'),
+            ], 'chunk-upload-config');
+
+            $this->commands([
+                Console\Clear::class,
+            ]);
+        }
     }
 }

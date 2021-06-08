@@ -11,7 +11,7 @@ class Disk
 
     public function __construct($file)
     {
-        $this->file = config('chunk-upload.path')."/{$file}";
+        $this->file = config('chunk-upload.path').'/'.date('Y/m').'/'.$file;
         $this->disk = Storage::disk(config('chunk-upload.disk'));
     }
 
